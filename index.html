@@ -21,7 +21,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
   
   <style>
-    :root { --brown-dark: #5D4037; --brown-mid: #8D6E63; --brown-light: #D7CCC8; --cream: #FFF9F1; --danger-red: #E57373; --success-green: #66BB6A; }
+    :root { --brown-dark: #5D4037; --brown-mid: #8D6E63; --brown-light: #D7CCC8; --cream: #FFF9F1; --accent: #A1887F; --danger-red: #E57373; --success-green: #66BB6A; }
     body { background: var(--cream); font-family: 'Quicksand', sans-serif; padding-bottom: 120px; color: var(--brown-dark); overflow-x: hidden; }
     #view-login { min-height: 85vh; display: flex; align-items: center; justify-content: center; }
     .login-card { background: white; border-radius: 35px; border: 1px solid var(--brown-light); box-shadow: 0 25px 50px rgba(93, 64, 55, 0.15); padding: 45px; width: 100%; max-width: 420px; position: relative; overflow: hidden; }
@@ -55,7 +55,7 @@
     <h3 class="fw-bold">Welcome Back</h3>
     <input type="text" id="login-id" class="form-control rounded-pill mb-3 ps-4" style="height: 55px;" placeholder="Staff ID">
     <input type="password" id="pin" class="form-control rounded-pill mb-4 ps-4" style="height: 55px;" placeholder="Security PIN">
-    <button class="btn btn-floofy w-100" onclick="login()">SIGN IN</button>
+    <button class="btn btn-floofy w-100 shadow-sm" onclick="login()">SIGN IN</button>
   </div>
 </div>
 
@@ -68,48 +68,49 @@
   </div>
 
   <div id="view-sell" class="view-section">
-    <div id="shift-closed-warning" class="alert alert-warning text-center rounded-pill py-2 mb-4" style="display:none; font-weight: 600;">Shift Closed: View Mode.</div>
+    <div id="shift-closed-warning" class="alert alert-warning text-center rounded-pill py-2 mb-4" style="display:none; font-weight: 600;"><i class="bi bi-exclamation-triangle-fill"></i> Shift Closed: View Mode.</div>
     <div class="row g-4">
       <div class="col-md-8"><div id="menu-grid" class="row g-3"></div></div>
       <div class="col-md-4">
         <div class="card card-custom p-4 sticky-top" style="top:20px;">
-          <h6 class="fw-bold mb-3">Order Summary (<span id="user-tag"></span>)</h6>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold mb-0">Current Order</h6>
+            <span class="badge bg-light text-dark rounded-pill border" id="user-tag"></span>
+          </div>
           <div id="cart-list" class="mb-3 small" style="min-height: 120px; max-height: 300px; overflow-y: auto;"></div>
           <hr>
           <div class="d-flex justify-content-between h4 fw-bold text-success mb-3"><span>Total</span><span>RM <span id="total-price">0.00</span></span></div>
           <select id="pay-method" class="form-select mb-3 rounded-pill" onchange="toggleCash()"><option value="QR Pay">QR Pay</option><option value="Cash Pay">Cash Pay</option></select>
           <div id="cash-group" style="display:none" class="mb-3">
             <input type="number" id="cash-received" class="form-control rounded-pill mb-2" placeholder="Cash Received" oninput="calcChange()">
-            <div class="d-flex justify-content-between px-2 small"><span>Change Due:</span><b class="text-danger">RM <span id="change-due">0.00</span></b></div>
+            <div class="d-flex justify-content-between px-2 small"><span>Change:</span><b class="text-danger">RM <span id="change-due">0.00</span></b></div>
           </div>
-          <textarea id="order-remark" class="form-control mb-3" rows="2" placeholder="Remark..."></textarea>
-          <button id="btn-complete-sale" class="btn btn-floofy btn-complete w-100" onclick="completeSale()">COMPLETE & PRINT</button>
+          <textarea id="order-remark" class="form-control mb-3 rounded-3" rows="2" placeholder="Notes..."></textarea>
+          <button id="btn-complete-sale" class="btn btn-floofy btn-complete w-100 d-flex align-items-center justify-content-center" onclick="completeSale()" style="gap:15px; padding:18px;">
+            <i class="bi bi-printer fs-4"></i><span class="fw-bold">COMPLETE & PRINT</span>
+          </button>
         </div>
       </div>
     </div>
   </div>
 
   <div id="view-queue" class="view-section">
-    <h5 class="fw-bold mb-4">Live Queue</h5>
+    <div class="d-flex justify-content-between align-items-center mb-4"><h5 class="fw-bold mb-0">Live Queue</h5><button class="btn btn-sm btn-floofy px-4 rounded-pill" onclick="loadQueue()"><i class="bi bi-arrow-clockwise"></i></button></div>
     <div id="queue-container" class="row g-3"></div>
   </div>
 
   <div id="view-sales" class="view-section">
-    <div class="d-flex justify-content-between mb-4"><h5 class="fw-bold">Reports</h5><input type="date" id="report-date" class="form-control form-control-sm w-auto" onchange="loadSalesData()"></div>
-    <div class="row g-3 mb-3">
-        <div class="col-6"><div class="card card-custom p-3 border-start border-4 border-info"><small class="text-muted">OPENING CASH</small><h5 class="fw-bold mb-0 text-info" id="open-cash-display">RM 0.00</h5></div></div>
-        <div class="col-6"><div class="card card-custom p-3 border-start border-4 border-info"><small class="text-muted">OPENING QR</small><h5 class="fw-bold mb-0 text-info" id="open-qr-display">RM 0.00</h5></div></div>
-    </div>
+    <div class="d-flex justify-content-between mb-4 align-items-center"><h5 class="fw-bold mb-0">Daily Reports</h5><input type="date" id="report-date" class="form-control form-control-sm rounded-pill w-auto" onchange="loadSalesData()"></div>
     <div id="cat-summary" class="row g-3 mb-4"></div>
-    <div class="card card-custom p-4 bg-white border-0 mb-3">
-      <div class="row text-center">
+    <div class="card card-custom p-4 bg-white border-0 mb-3 text-center">
+      <div class="row">
         <div class="col-4 border-end"><small>CASH</small><br><h5 id="sum-cash">RM 0.00</h5></div>
         <div class="col-4 border-end"><small>QR</small><br><h5 id="sum-qr">RM 0.00</h5></div>
         <div class="col-4 text-success"><small>TOTAL</small><br><h5 id="sum-grand">RM 0.00</h5></div>
       </div>
     </div>
-    <div class="alert alert-info rounded-4 d-flex justify-content-between"><span>PETTY CASH IN HAND:</span><b id="total-in-hand">0.00</b></div>
-    <div class="history-scroll-box"><div id="sales-history" class="list-group list-group-flush"></div></div>
+    <div class="alert alert-info rounded-4 d-flex justify-content-between align-items-center"><span>PETTY CASH IN HAND:</span><h4 class="fw-bold mb-0" id="total-in-hand">0.00</h4></div>
+    <div class="history-scroll-box card card-custom p-2"><div id="sales-history" class="list-group list-group-flush"></div></div>
     <div id="closing-container" class="card card-custom p-4 border-dashed border-danger mt-4" style="border: 2px dashed #E57373;">
       <h6 class="fw-bold mb-3 text-danger">End of Day Settlement</h6>
       <div class="row g-3"><div class="col-6"><input type="number" id="close-cash" class="form-control rounded-pill" placeholder="Actual Cash"></div><div class="col-6"><input type="number" id="close-qr" class="form-control rounded-pill" placeholder="Actual QR"></div></div>
@@ -118,11 +119,13 @@
   </div>
 
   <div id="view-admin" class="view-section">
-    <h5 class="fw-bold mb-4">Admin Dashboard</h5>
-    <div class="card card-custom p-4 mb-4"><div class="admin-table-container"><table class="table table-hover align-middle"><thead class="table-dark"><tr><th>Product</th><th>Cat</th><th>Price</th><th>Action</th></tr></thead><tbody id="product-list-admin"></tbody></table></div></div>
+    <h5 class="fw-bold mb-4">Management</h5>
+    <div class="card card-custom p-4 mb-4">
+      <div class="admin-table-container"><table class="table table-hover align-middle table-admin mb-0"><thead class="table-dark"><tr><th>Product</th><th>Cat</th><th>Price</th><th>Action</th></tr></thead><tbody id="product-list-admin"></tbody></table></div>
+    </div>
     <div class="row g-4">
-      <div class="col-md-6"><div class="card card-custom p-4"><h6 class="fw-bold mb-3">Add Product</h6><input id="apn" class="form-control mb-2" placeholder="Name"><input id="apc" class="form-control mb-2" placeholder="Category"><input id="app" class="form-control mb-3" type="number" placeholder="Price"><button class="btn btn-floofy w-100" onclick="saveP()">ADD</button></div></div>
-      <div class="col-md-6"><div class="card card-custom p-4"><h6 class="fw-bold mb-3">Staff PIN</h6><input id="sid" class="form-control mb-2" placeholder="Staff ID"><input id="spi" class="form-control mb-3" placeholder="New PIN"><button class="btn btn-outline-secondary w-100" onclick="updP()">UPDATE</button></div></div>
+      <div class="col-md-6"><div class="card card-custom p-4"><h6>Add Product</h6><input id="apn" class="form-control mb-2 rounded-pill" placeholder="Name"><input id="apc" class="form-control mb-2 rounded-pill" placeholder="Category"><input id="app" class="form-control mb-3 rounded-pill" type="number" placeholder="Price"><button class="btn btn-floofy w-100" onclick="saveP()">ADD</button></div></div>
+      <div class="col-md-6"><div class="card card-custom p-4"><h6>Staff PIN</h6><input id="sid" class="form-control mb-2 rounded-pill" placeholder="ID"><input id="spi" class="form-control mb-3 rounded-pill" placeholder="New PIN"><button class="btn btn-outline-secondary w-100 rounded-pill" onclick="updP()">UPDATE</button></div></div>
     </div>
     <div class="card card-custom p-4 mt-4 bg-dark text-white text-center"><button class="btn btn-outline-light rounded-pill px-5" onclick="connectBluetooth()">SCAN PRINTER</button><div id="printer-status" class="small mt-3">Ready</div></div>
   </div>
@@ -134,7 +137,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // --- PASTE YOUR GOOGLE URL HERE ---
+  // --- PASTE YOUR GOOGLE DEPLOY URL HERE ---
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzt-SfoLXUuLtSTYhVgcvknEInzvVcf6Bs8AVA9PBkX_dHGN1LYLKgTb0PVv1sMTnbo/exec";
 
   let cart = [], currentStaff = "", currentStaffName = "", printCharacteristic = null, isShiftActive = false;
@@ -145,7 +148,7 @@
       const res = await response.json();
       if (!res.success) throw new Error(res.error);
       return res.data;
-    } catch (e) { alert("API Error: " + e.message); throw e; }
+    } catch (e) { alert("Handshake Error: " + e.message); throw e; }
   }
 
   window.onload = () => { document.getElementById('report-date').value = new Date().toISOString().split('T')[0]; };
@@ -162,6 +165,7 @@
   }
 
   function applyShiftSecurity() { document.getElementById('btn-complete-sale').disabled = !isShiftActive; document.getElementById('shift-closed-warning').style.display = isShiftActive ? 'none' : 'block'; }
+  
   async function submitOpening() {
     const cash = document.getElementById('open-cash').value, qr = document.getElementById('open-qr').value;
     await callAPI("openShift", { cash, qr, staffId: currentStaff });
@@ -171,7 +175,7 @@
   function add(n, p) { if(!isShiftActive) return; let i = cart.find(x => x.name === n); if(i) i.qty++; else cart.push({name: n, price: p, qty: 1}); renderCart(); }
   function minus(idx) { if (cart[idx].qty > 1) cart[idx].qty--; else cart.splice(idx, 1); renderCart(); }
   function renderCart() {
-    document.getElementById('cart-list').innerHTML = cart.map((i, idx) => `<div class="d-flex justify-content-between mb-2 bg-light p-2"><span><button class="btn-qty-minus" onclick="minus(${idx})">-</button>${i.qty}x ${i.name}</span><b>RM ${(i.price*i.qty).toFixed(2)}</b></div>`).join('');
+    document.getElementById('cart-list').innerHTML = cart.map((i, idx) => `<div class="d-flex justify-content-between align-items-center mb-2 bg-light p-2 rounded-3"><span><button class="btn-qty-minus bg-danger text-white border-0 rounded-circle me-2" style="width:24px; height:24px; line-height:1;" onclick="minus(${idx})">-</button>${i.qty}x ${i.name}</span><span class="fw-bold">RM ${(i.price*i.qty).toFixed(2)}</span></div>`).join('');
     document.getElementById('total-price').innerText = cart.reduce((s, i) => s + (i.price*i.qty), 0).toFixed(2);
   }
 
@@ -187,15 +191,17 @@
     const date = document.getElementById('report-date').value;
     const data = await callAPI("getTodayData", { date });
     document.getElementById('open-cash-display').innerText = "RM " + (data.openingCash || 0).toFixed(2);
-    document.getElementById('cat-summary').innerHTML = data.categories.map(c => `<div class="col-6 col-md-3"><div class="card-custom p-3 text-center" onclick="viewCategoryItems('${c.name}')"><small>${c.name}</small><br><b>RM ${c.total.toFixed(2)}</b></div></div>`).join('');
-    document.getElementById('sales-history').innerHTML = data.history.map(s => `<button class="list-group-item list-group-item-action d-flex justify-content-between" onclick="vR('${s.id}', '${s.total}', '${s.queue}', '${s.remark}', '${s.status}', '${s.staff}')"><div><b>#${s.queue}</b><br><small>${s.time}</small></div><b>RM ${parseFloat(s.total).toFixed(2)}</b></button>`).join('');
+    document.getElementById('sum-cash').innerText = "RM " + (data.history.reduce((s,x)=> x.status!=='Refunded' && x.method==='Cash Pay' ? s+parseFloat(x.total):s, 0)).toFixed(2);
+    document.getElementById('cat-summary').innerHTML = data.categories.map(c => `<div class="col-6 col-md-3"><div class="card-custom p-3 text-center" style="background:var(--brown-light); cursor:pointer;" onclick="viewCategoryItems('${c.name}')"><small class="text-uppercase fw-bold" style="font-size:0.65rem">${c.name}</small><br><span class="fw-bold">RM ${c.total.toFixed(2)}</span></div></div>`).join('');
+    document.getElementById('sales-history').innerHTML = data.history.map(s => `<button class="list-group-item list-group-item-action d-flex justify-content-between mb-2 rounded-3 border-start border-4 ${s.status==='Refunded'?'opacity-50 border-secondary':'border-brown-mid'}" onclick="vR('${s.id}', '${s.total}', '${s.queue}', '${s.remark}', '${s.status}', '${s.staff}')"><div><b>#${s.queue}</b><br><small>${s.time}</small></div><b>RM ${parseFloat(s.total).toFixed(2)}</b></button>`).join('');
   }
 
   async function viewCategoryItems(categoryName) {
     const date = document.getElementById('report-date').value;
     bootstrap.Modal.getOrCreateInstance(document.getElementById('catDrillModal')).show();
+    document.getElementById('cat-drill-body').innerHTML = '<div class="text-center p-4"><div class="spinner-border text-brown-mid" role="status"></div></div>';
     const items = await callAPI("getCategoryDetails", { cat: categoryName, date: date });
-    document.getElementById('cat-drill-body').innerHTML = items.map(i => `<div class="list-group-item d-flex justify-content-between"><span>${i.name}</span><span class="badge bg-brown-dark rounded-pill">${i.qty} SOLD</span></div>`).join('');
+    document.getElementById('cat-drill-body').innerHTML = items.map(i => `<div class="list-group-item d-flex justify-content-between align-items-center py-3"><span>${i.name}</span><span class="badge bg-brown-dark rounded-pill px-3 py-2">${i.qty} SOLD</span></div>`).join('');
   }
 
   async function connectBluetooth() {
@@ -208,8 +214,9 @@
   }
 
   function nav(v, el) { document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); document.getElementById('view-'+v).classList.add('active'); if(el) { document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); el.classList.add('active'); } if(v==='sales') loadSalesData(); if(v==='admin') loadAdminProducts(); if(v==='queue') loadQueue(); }
-  async function loadMenu() { const d = await callAPI("getProducts"); document.getElementById('menu-grid').innerHTML = d.map(p => `<div class="col-6 col-md-4"><div class="product-card" onclick="add('${p.name}', ${p.price})"><b>${p.name}</b><br>RM ${p.price.toFixed(2)}</div></div>`).join(''); }
-  async function loadAdminProducts() { const d = await callAPI("getFullProducts"); document.getElementById('product-list-admin').innerHTML = d.map(p => `<tr><td>${p.name}</td><td>${p.cat}</td><td>${p.price}</td><td><button onclick="delProduct('${p.id}')">Del</button></td></tr>`).join(''); }
+  async function loadMenu() { const d = await callAPI("getProducts"); document.getElementById('menu-grid').innerHTML = d.map(p => `<div class="col-6 col-md-4"><div class="product-card" onclick="add('${p.name}', ${p.price})"><span>${p.name}</span><span class="product-price">RM ${p.price.toFixed(2)}</span></div></div>`).join(''); }
+  async function loadQueue() { const orders = await callAPI("getActiveQueue"); document.getElementById('queue-container').innerHTML = orders.map(o => `<div class="col-12 col-md-6"><div class="queue-card d-flex justify-content-between align-items-center"><div><h3>#${o.queue}</h3><small>${o.time}</small></div><button class="btn btn-floofy px-4 rounded-pill" onclick="settleOrder('${o.id}')">SETTLE</button></div></div>`).join(''); }
+  async function settleOrder(id) { if(confirm("Settle?")) { await callAPI("updateOrderStatus", {id, status: "Settled"}); loadQueue(); } }
   function toggleCash() { document.getElementById('cash-group').style.display = (document.getElementById('pay-method').value === 'Cash Pay') ? 'block' : 'none'; }
   function calcChange() { document.getElementById('change-due').innerText = Math.max(0, document.getElementById('cash-received').value - document.getElementById('total-price').innerText).toFixed(2); }
 </script>
